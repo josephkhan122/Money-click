@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Money Click App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- PayPal SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=Acm3KgkRKQ4CECbtfmlVVCOM6FFpAZ3fG9a69h5CyyTafd-SNrqcNp09Q0t5O5RS7OlMcRft6k0V4uQZ&currency=GBP"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .balance {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .button, .cash-out-button, .ad-button {
+            display: block;
+            margin: 10px auto;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .button {
+            background-color: #28a745;
+            color: white;
+        }
+        .button:hover {
+            background-color: #218838;
+        }
+        .cash-out-button {
+            background-color: #007bff;
+            color: white;
+        }
+        .cash-out-button:hover {
+            background-color: #0056b3;
+        }
+        .ad-button {
+            background-color: #ffc107;
+            color: black;
+        }
+        .ad-button:hover {
+            background-color: #e0a800;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Make Money by Clicking!</h1>
+        <div class="balance">Balance: £<span id="balance">0.00</span></div>
+
+        <button class="button" id="clickButton">Click to Earn</button>
+
+        <button class="ad-button" id="adButton">Watch Ad (£0.05)</button>
+
+        <button class="cash-out-button" id="cardButton">Cash Out via Card (coming soon)</button>
+
+        <div style="margin-top: 20px;">
+            <h3>Cash Out via PayPal</h3>
+            <div id="paypal-button-container"></div>
+        </div>
+    </div>
+
+    <script>
+        let balance = 0;
+
+        const updateBalanceDisplay = () => {
+            document.getElementById("balance").textContent = balance.toFixed(2);
+        };
+
+        document.getElementById("clickButton").addEventListener("click", () => {
+            balance += 0.01;
+            updateBalanceDisplay();
+        });
+
+        document.getElementById("adButton").addEventListener("click", () => {
+            balance += 0.05;
+            updateBalanceDisplay();
+            alert("Cha-ching! You got £0.05 from the ad fairy!");
+        });
+
+        document.getElementById("cardButton").addEventListener("click", () => {
+            alert("Card payouts coming soon, stay tuned!");
+        });
+
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: balance.toFixed(2)
+                        }
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    alert('Transaction completed by ' + details.payer.name.given_name + '!');
+                    balance = 0;
+                    updateBalanceDisplay();
+                });
+            }
+        }).render('#paypal-button-container');
+    </script>
+
+</body>
+</html> 
